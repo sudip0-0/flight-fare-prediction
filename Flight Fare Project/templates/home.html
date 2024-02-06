@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Price Prediction</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="static/css/styles.css">
+    
+</head>
+
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">FLIGHT PRICE</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <!-- Display the user's name in the navigation bar -->
+                        <a class="nav-link" href="#">
+                            {% if username %}
+                                <p>Welcome, {{ username }}!</p>
+                             {% else %}
+                                <p>Welcome, Guest!</p>
+                              {% endif %}</a>
+                    </li>
+                
+                    
+                    <li class="nav-item">
+                        <!-- Add a logout link that points to the logout route -->
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+   <!-- Main Content Container -->
+   <div class="container my-5">
+    <h1 class="text-center mb-4">Flight Price Prediction</h1>
+
+    <form action="/predict" method="post" class="my-4">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Departure Date</h5>
+                        <input type="datetime-local" name="Dep_Time" id="Dep_Time" class="form-control" required="required" min="" onchange="setMinArrivalTime()">
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Arrival Date</h5>
+                        <input type="datetime-local" name="Arrival_Time" id="Arrival_Time" class="form-control" required="required" min="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row my-4">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Country</h5>
+                        <select name="country" id="country" class="form-control" required="required" onchange="updateLocations()">
+                           <option value="Non">Select</option>
+                            <option value="India">India</option>
+                            <option value="Nepal">Nepal</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Which Airline you want to travel?</h5>
+                        <select name="airline" id="airline" class="form-control" required="required">
+                            <!-- <option value="Jet Airways">Jet Airways</option>
+                            <option value="IndiGo">IndiGo</option> -->
+                            <!-- Add more airline options here -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-4">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Source</h5>
+                        <select name="Source" id="Source" class="form-control" required="required">
+                            <!-- <option value="Delhi">Delhi</option>
+                            <option value="Kolkata">Kolkata</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Chennai">Chennai</option> -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Destination</h5>
+                        <select name="Destination" id="Destination" class="form-control" required="required">
+                            <!-- <option value="Cochin">Cochin</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="New Delhi">New Delhi</option>
+                            <option value="Hyderabad">Hyderabad</option>
+                            <option value="Kolkata">Kolkata</option> -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Stopage</h5>
+                        <select name="stops" id="stops" class="form-control" required="required">
+                            
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <div class="row my-4 text-center">
+            <div class="col-lg-12">
+                <!-- Predict button -->
+                <button type="submit" class="btn btn-primary btn-lg">Predict Now</button>
+                <h3 class="text-center my-4">{{ prediction_text }}</h3>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- Buy button with styled background -->
+ <div class="container my-5 text-center">
+    <form action="/show" method="post">
+        <div class="row my-4">
+            <div class="col-lg-12">
+                <button type="submit" class="btn btn-success btn-lg">Buy Tickets</button>
+            </div>
+         </div>
+     </form>
+</div>
+    
+
+<!-- Bootstrap JS and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+</body>
+<script>
+function updateLocations() {
+    var country = document.getElementById("country").value;
+    var sourceDropdown = document.getElementById("Source");
+    var destinationDropdown = document.getElementById("Destination");
+    var airlineDropdown = document.getElementById("airline");
+    var stopDropdown = document.getElementById("stops");
+
+    airlineDropdown.innerHTML = ""; 
+    stopDropdown.innerHTML = "";
+    // Clear existing options
+    sourceDropdown.innerHTML = "";
+    destinationDropdown.innerHTML = "";
+
+    // Add options based on the selected country
+    if (country === "India") {
+            addOption(stopDropdown, "Non-Stop", "0");
+            addOption(stopDropdown, "1", "1");
+            addOption(stopDropdown, "2", "2");
+            addOption(stopDropdown, "3", "3");
+            addOption(stopDropdown, "4", "4");
+
+            addOption(sourceDropdown, "Delhi", "Delhi");
+            addOption(sourceDropdown, "Kolkata", "Kolkata");
+            addOption(sourceDropdown, "Chennai", "Chennai");
+            addOption(sourceDropdown, "Mumbai", "Mumbai");
+            addOption(sourceDropdown, "Bangalore", "Bangalore");
+            addOption(destinationDropdown, "Cochin", "Cochin");
+            addOption(destinationDropdown, "Delhi", "Delhi");
+            addOption(destinationDropdown, "Hyderabad", "Hyderabad");
+            addOption(destinationDropdown, "Kolkata", "Kolkata");
+            addOption(destinationDropdown, "Bangalore", "Bangalore");
+
+            addOption(airlineDropdown, "IndiGo", "IndiGo");
+            addOption(airlineDropdown, "Air India", "Air India");
+            addOption(airlineDropdown, "Jet Airways", "Jet Airways");
+            addOption(airlineDropdown, "SpiceJet", "SpiceJet");
+            addOption(airlineDropdown, "Multiple Carriers", "Multiple Carriers");
+            addOption(airlineDropdown, "GoAir", "GoAir");
+            addOption(airlineDropdown, "Vistara", "Vistara");
+            addOption(airlineDropdown, "Air Asia", "Air Asia");
+
+        } else if (country === "Nepal") {
+            addOption(sourceDropdown, "Rajbiraj", "Rajbiraj");
+            addOption(sourceDropdown, "Kathmandu", "Kathmandu");
+            addOption(sourceDropdown, "Biratnagar", "Biratnagar");
+            addOption(sourceDropdown, "Janakpur", "Janakpur");
+            addOption(sourceDropdown, "Nepalgunj", "Nepalgunj");
+            addOption(sourceDropdown, "Simara", "Simara");
+            addOption(sourceDropdown, "Bharatpur", "Bharatpur");
+            addOption(sourceDropdown, "Bhairawah", "Bhairawah");
+            addOption(sourceDropdown, "Pokhara", "Pokhara");
+            addOption(sourceDropdown, "Bhadrapur", "Bhadrapur");
+            addOption(sourceDropdown, "Dhangadi", "Dhangadi");
+            addOption(destinationDropdown, "Rajbiraj", "Rajbiraj");
+            addOption(destinationDropdown, "Kathmandu", "Kathmandu");
+            addOption(destinationDropdown, "Biratnagar", "Biratnagar");
+            addOption(destinationDropdown, "Janakpur", "Janakpur");
+            addOption(destinationDropdown, "Nepalgunj", "Nepalgunj");
+            addOption(destinationDropdown, "Simara", "Simara");
+            addOption(destinationDropdown, "Bharatpur", "Bharatpur");
+            addOption(destinationDropdown, "Bhairawah", "Bhairawah");
+            addOption(destinationDropdown, "Pokhara", "Pokhara");
+            addOption(destinationDropdown, "Bhadrapur", "Bhadrapur");
+            addOption(destinationDropdown, "Dhangadi", "Dhangadi");
+
+            addOption(airlineDropdown, "Shree Airlines", "Shree Airlines");
+            addOption(airlineDropdown, "Buddha Air", "Buddha Air");
+            addOption(airlineDropdown, "Yeti Airlines", "Yeti Airlines");
+
+            addOption(stopDropdown, "Non-Stop", "0");
+
+        }
+    }
+    function addOption(selectElement, text, value) {
+        var option = document.createElement("option");
+        option.textContent = text;
+        option.value = value;
+        selectElement.appendChild(option);
+    }
+
+const depTimeInput = document.getElementById('Dep_Time');
+const arrivalTimeInput = document.getElementById('Arrival_Time');
+
+// Add event listener for change in departure time
+depTimeInput.addEventListener('change', function() {
+    // Ensure departure time is after current time
+    const currentTime = new Date();
+const offset = 5.75 * 60 * 60 * 1000; // Offset in milliseconds (5 hours 45 minutes)
+currentTime.setTime(currentTime.getTime() + offset); // Adjust the time
+
+// Convert the adjusted time to ISO format (YYYY-MM-DDTHH:MM)
+const currentNST = currentTime.toISOString().slice(0, 16);
+
+if (depTimeInput.value < currentNST) {
+    alert('Departure time must be after current time.');
+    depTimeInput.value = currentNST; // Reset to current time in NST
+}
+});
+
+// Add event listener for change in arrival time
+arrivalTimeInput.addEventListener('change', function() {
+    // Ensure arrival time is after departure time
+    if (arrivalTimeInput.value < depTimeInput.value) {
+        alert('Arrival time must be after departure time.');
+        arrivalTimeInput.value = depTimeInput.value; // Reset to departure time
+    }
+});
+</script>
+</body>
+
+
+<!-- Footer Section -->
+
+<footer class="bg-dark text-white mt-5">
+    <div class="container py-3">
+        <div class="row mt-3">
+            <div class="col-lg-12 text-center">
+                
+                <p class="text-muted mb-0">A machine learning system built using decision tree and random forest algorithms for the fulfillment of Tribhuvan University final year project.</p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-lg-12 text-center">
+                <p class="text-white mb-0">&copy; 2024 Flight Fare Prediction System</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+
+</html>
